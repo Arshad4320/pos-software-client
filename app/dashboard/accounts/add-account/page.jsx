@@ -33,7 +33,7 @@ const AddAccount = () => {
         <form onSubmit={handleSubmit(onSubmit)} className="px-8 py-6 space-y-6">
           {/* Account Name */}
           <div>
-            <label className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
+            <label className="text-md font-medium text-gray-700 mb-2 flex items-center gap-2">
               <Layers size={16} />
               Account Name
             </label>
@@ -56,7 +56,7 @@ const AddAccount = () => {
 
           {/* Account Type */}
           <div>
-            <label className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
+            <label className="text-md font-medium text-gray-700 mb-2 flex items-center gap-2">
               <Layers size={16} />
               Account Type
             </label>
@@ -84,7 +84,7 @@ const AddAccount = () => {
 
           {/* Opening Balance */}
           <div>
-            <label className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
+            <label className="text-md font-medium text-gray-700 mb-2 flex items-center gap-2">
               <DollarSign size={16} />
               Opening Balance
             </label>
