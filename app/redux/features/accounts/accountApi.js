@@ -13,7 +13,7 @@ export const accountApi = baseApi.injectEndpoints({
 
     getAccounts: builder.query({
       query: () => "account/accounts",
-      providesTags: ["Account"],
+      providesTags: ["Account", "Transaction"],
     }),
 
     getAccountById: builder.query({
@@ -26,7 +26,7 @@ export const accountApi = baseApi.injectEndpoints({
         method: "PATCH",
         body: data,
       }),
-      invalidatesTags: ["Account"],
+      invalidatesTags: ["Account", "Transaction"],
     }),
 
     deleteAccount: builder.mutation({

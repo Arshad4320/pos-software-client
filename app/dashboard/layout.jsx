@@ -33,10 +33,12 @@ const navLinks = [
   {
     label: "Reports",
     children: [
-      { href: "/reports/trial-balance", label: "Trial Balance" },
-      { href: "/reports/ledger", label: "Ledger" },
-      { href: "/reports/income-statement", label: "Income Statement" },
-      { href: "/reports/balance-sheet", label: "Balance Sheet" },
+      { href: "/dashboard/report/journal", label: "Journal" },
+      { href: "/dashboard/report/balance", label: "Balance Sheet" },
+      {
+        href: "/dashboard/report/income",
+        label: "Income Statement",
+      },
     ],
   },
 ];

@@ -12,7 +12,7 @@ export const transactionApi = baseApi.injectEndpoints({
     }),
 
     getTransactions: builder.query({
-      query: () => "/transactions",
+      query: () => "transaction/transactions",
       providesTags: ["Transaction"],
     }),
   }),
