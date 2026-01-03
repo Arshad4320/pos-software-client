@@ -1,10 +1,10 @@
-import { baseApi } from "./baseApi";
+import { baseApi } from "../../RootApi/api";
 
 export const transactionApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     createTransaction: builder.mutation({
       query: (data) => ({
-        url: "/create-transaction",
+        url: "transaction/create-transaction",
         method: "POST",
         body: data,
       }),

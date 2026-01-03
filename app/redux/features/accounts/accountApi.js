@@ -1,10 +1,10 @@
-import { baseApi } from "./baseApi";
+import { baseApi } from "../../RootApi/api";
 
 export const accountApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     createAccount: builder.mutation({
       query: (data) => ({
-        url: "/create-account",
+        url: "account/create-account",
         method: "POST",
         body: data,
       }),
@@ -12,17 +12,17 @@ export const accountApi = baseApi.injectEndpoints({
     }),
 
     getAccounts: builder.query({
-      query: () => "/accounts",
+      query: () => "account/accounts",
       providesTags: ["Account"],
     }),
 
     getAccountById: builder.query({
-      query: (id) => `/account/${id}`,
+      query: (id) => `account/account/${id}`,
     }),
 
     updateAccount: builder.mutation({
       query: ({ id, data }) => ({
-        url: `/update-account/${id}`,
+        url: `account/update-account/${id}`,
         method: "PATCH",
         body: data,
       }),
@@ -31,7 +31,7 @@ export const accountApi = baseApi.injectEndpoints({
 
     deleteAccount: builder.mutation({
       query: (id) => ({
-        url: `/delete-account/${id}`,
+        url: `account/delete-account/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Account"],

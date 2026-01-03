@@ -2,8 +2,10 @@
 
 import { useForm } from "react-hook-form";
 import { Wallet, Layers, DollarSign } from "lucide-react";
+import { useCreateAccountMutation } from "@/app/redux/features/accounts/accountApi";
 
 const AddAccount = () => {
+  const [createAccount] = useCreateAccountMutation();
   const {
     register,
     handleSubmit,
@@ -11,14 +13,20 @@ const AddAccount = () => {
     reset,
   } = useForm();
 
-  const onSubmit = (data) => {
-    const payload = {
-      ...data,
-      balance: Number(data.balance || 0),
-    };
+  const onSubmit = async (data) => {
+    try {
+      const payload = {
+        ...data,
+        balance: Number(data.balance || 0),
+      };
 
-    console.log("Account Payload:", payload);
-    reset();
+      const result = await createAccount(payload).unwrap();
+
+      console.log("Account Created:", result);
+      reset();
+    } catch (err) {
+      console.log(err.message);
+    }
   };
 
   return (
