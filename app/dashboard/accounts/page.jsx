@@ -7,7 +7,7 @@ import {
 } from "@/app/redux/features/accounts/accountApi";
 import { FaRegEdit } from "react-icons/fa";
 import { AiOutlineDelete } from "react-icons/ai";
-// Lucide React থেকে সঠিক আইকন নাম ইমপোর্ট করা হলো
+
 import {
   Wallet,
   Activity,
@@ -20,6 +20,7 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 import Link from "next/link";
+import toast from "react-hot-toast";
 
 const AccountHome = () => {
   const { data, isLoading } = useGetAccountsQuery();
@@ -43,12 +44,14 @@ const AccountHome = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("আপনি কি নিশ্চিতভাবে এই অ্যাকাউন্টটি ডিলিট করতে চান?")) {
-      try {
-        await deleteAccount(id).unwrap();
-      } catch (err) {
-        console.error("Delete Error:", err);
+    try {
+      const result = await deleteAccount(id).unwrap();
+
+      if (result) {
+        toast(result.message || "account deleted successfully");
       }
+    } catch (err) {
+      console.log(err);
     }
   };
 

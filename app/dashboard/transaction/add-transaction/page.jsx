@@ -7,14 +7,18 @@ import {
   ArrowUpCircle,
   DollarSign,
   Calendar,
+  Loader2,
+  Plus,
 } from "lucide-react";
 import { useGetAccountsQuery } from "@/app/redux/features/accounts/accountApi";
 import { useCreateTransactionMutation } from "@/app/redux/features/transaction/transactionApi";
+import toast, { Toaster } from "react-hot-toast";
 
 const transactionTypes = ["Sales", "Purchase", "Receipt", "Payment"];
 
 const AddTransaction = () => {
-  const { data, isLoading } = useGetAccountsQuery();
+  const { data: accountsData, isLoading: accountsLoading } =
+    useGetAccountsQuery();
   const [createTransaction, { isLoading: isSubmitting }] =
     useCreateTransactionMutation();
 
@@ -31,195 +35,174 @@ const AddTransaction = () => {
         ...formData,
         amount: Number(formData.amount),
       };
-      const result = await createTransaction(payload).unwrap();
-      console.log("Transaction Created:", result);
+      await createTransaction(payload).unwrap();
+      toast.success("Transaction recorded successfully");
       reset();
     } catch (err) {
-      console.error(err?.data || err);
+      toast.error(err?.data?.message || "Failed to record transaction");
     }
   };
 
-  if (isLoading) {
+  if (accountsLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-gray-500">
-        Loading accounts...
+      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-3 text-slate-500">
+        <Loader2 className="animate-spin text-blue-500" size={32} />
+        <p className="text-sm font-medium">Loading accounts...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-2xl bg-white rounded-2xl shadow-lg p-6">
-        <h2 className="text-3xl font-bold text-gray-800 text-center mb-6">
-          Add New Transaction
-        </h2>
+    <div className="min-h-[80vh] flex items-center justify-center p-6 bg-slate-50/50">
+      <Toaster position="top-center" />
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          {/* Date */}
-          <div>
-            <label className="flex items-center gap-2 text-gray-700 font-medium mb-1">
-              <Calendar size={16} /> Date
-            </label>
-            <input
-              type="date"
-              {...register("date", { required: "Date is required" })}
-              className={`w-full rounded-xl border px-4 py-2.5 text-sm focus:outline-none focus:ring-2 transition ${
-                errors.date
-                  ? "border-red-500 focus:ring-red-300"
-                  : "border-gray-300 focus:ring-blue-400"
-              }`}
-            />
-            {errors.date && (
-              <p className="text-red-500 text-xs mt-1">{errors.date.message}</p>
-            )}
+      <div className="w-full max-w-2xl bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        {/* Header */}
+        <div className="px-8 pt-8 pb-4 border-b border-slate-50">
+          <div className="flex items-center gap-3 mb-1">
+            <div className="p-2 bg-slate-100 rounded-lg text-slate-600">
+              <Plus size={20} />
+            </div>
+            <h2 className="text-xl font-semibold text-slate-800">
+              New Transaction
+            </h2>
+          </div>
+          <p className="text-slate-500 text-sm">
+            Record a new journal entry into the system.
+          </p>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit(onSubmit)} className="px-8 py-6 space-y-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {/* Date */}
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-slate-700 flex items-center gap-2">
+                <Calendar size={14} className="text-slate-400" /> Date
+              </label>
+              <input
+                type="date"
+                {...register("date", { required: "Date is required" })}
+                className={`w-full bg-slate-50 rounded-lg border px-4 py-2.5 text-sm transition-all outline-none ${
+                  errors.date
+                    ? "border-red-400 focus:bg-white"
+                    : "border-slate-200 focus:border-blue-500 focus:bg-white"
+                }`}
+              />
+            </div>
+
+            {/* Transaction Type */}
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-slate-700 flex items-center gap-2">
+                Transaction Type
+              </label>
+              <select
+                {...register("transactionType", { required: "Required" })}
+                className="w-full bg-slate-50 rounded-lg border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition-all"
+              >
+                <option value="">Select Type</option>
+                {transactionTypes.map((type) => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           {/* Description */}
-          <div>
-            <label className="flex items-center gap-2 text-gray-700 font-medium mb-1">
-              <FileText size={16} /> Description
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-slate-700 flex items-center gap-2">
+              <FileText size={14} className="text-slate-400" /> Description
             </label>
             <input
               type="text"
-              placeholder="Transaction description"
+              placeholder="What is this transaction for?"
               {...register("description", {
                 required: "Description is required",
               })}
-              className={`w-full rounded-xl border px-4 py-2.5 text-sm focus:outline-none focus:ring-2 transition ${
+              className={`w-full bg-slate-50 rounded-lg border px-4 py-2.5 text-sm transition-all outline-none ${
                 errors.description
-                  ? "border-red-500 focus:ring-red-300"
-                  : "border-gray-300 focus:ring-blue-400"
+                  ? "border-red-400 focus:bg-white"
+                  : "border-slate-200 focus:border-blue-500 focus:bg-white"
               }`}
             />
-            {errors.description && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.description.message}
-              </p>
-            )}
           </div>
 
-          {/* Transaction Type */}
-          <div>
-            <label className="flex items-center gap-2 text-gray-700 font-medium mb-1">
-              Transaction Type
-            </label>
-            <select
-              {...register("transactionType", {
-                required: "Transaction type is required",
-              })}
-              className={`w-full rounded-xl border px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 transition ${
-                errors.transactionType
-                  ? "border-red-500 focus:ring-red-300"
-                  : "border-gray-300 focus:ring-blue-400"
-              }`}
-            >
-              <option value="">Select transaction type</option>
-              {transactionTypes.map((type) => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
-              ))}
-            </select>
-            {errors.transactionType && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.transactionType.message}
-              </p>
-            )}
-          </div>
-
-          {/* Debit & Credit */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="flex items-center gap-2 text-gray-700 font-medium mb-1">
-                <ArrowDownCircle size={16} /> Debit Account
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {/* Debit Account */}
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-slate-700 flex items-center gap-2">
+                <ArrowDownCircle size={14} className="text-emerald-500" /> Debit
+                Account
               </label>
               <select
-                {...register("debitAccount", {
-                  required: "Debit account is required",
-                })}
-                className={`w-full rounded-xl border px-4 py-2.5 text-sm focus:outline-none focus:ring-2 transition ${
-                  errors.debitAccount
-                    ? "border-red-500 focus:ring-red-300"
-                    : "border-gray-300 focus:ring-blue-400"
-                }`}
+                {...register("debitAccount", { required: "Required" })}
+                className="w-full bg-slate-50 rounded-lg border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition-all"
               >
-                <option value="">Select debit account</option>
-                {data?.data?.map((acc) => (
+                <option value="">Select Debit Account</option>
+                {accountsData?.data?.map((acc) => (
                   <option key={acc._id} value={acc._id}>
-                    {acc.name} ({acc.type})
+                    {acc.name}
                   </option>
                 ))}
               </select>
-              {errors.debitAccount && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.debitAccount.message}
-                </p>
-              )}
             </div>
 
-            <div>
-              <label className="flex items-center gap-2 text-gray-700 font-medium mb-1">
-                <ArrowUpCircle size={16} /> Credit Account
+            {/* Credit Account */}
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-slate-700 flex items-center gap-2">
+                <ArrowUpCircle size={14} className="text-rose-500" /> Credit
+                Account
               </label>
               <select
-                {...register("creditAccount", {
-                  required: "Credit account is required",
-                })}
-                className={`w-full rounded-xl border px-4 py-2.5 text-sm focus:outline-none focus:ring-2 transition ${
-                  errors.creditAccount
-                    ? "border-red-500 focus:ring-red-300"
-                    : "border-gray-300 focus:ring-blue-400"
-                }`}
+                {...register("creditAccount", { required: "Required" })}
+                className="w-full bg-slate-50 rounded-lg border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition-all"
               >
-                <option value="">Select credit account</option>
-                {data?.data?.map((acc) => (
+                <option value="">Select Credit Account</option>
+                {accountsData?.data?.map((acc) => (
                   <option key={acc._id} value={acc._id}>
-                    {acc.name} ({acc.type})
+                    {acc.name}
                   </option>
                 ))}
               </select>
-              {errors.creditAccount && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.creditAccount.message}
-                </p>
-              )}
             </div>
           </div>
 
           {/* Amount */}
-          <div>
-            <label className="flex items-center gap-2 text-gray-700 font-medium mb-1">
-              <DollarSign size={16} /> Amount
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-slate-700 flex items-center gap-2">
+              <DollarSign size={14} className="text-slate-400" /> Amount
             </label>
             <input
               type="number"
-              min="1"
+              step="0.01"
               placeholder="0.00"
               {...register("amount", {
                 required: "Amount is required",
-                min: { value: 1, message: "Amount must be greater than zero" },
+                min: { value: 1, message: "Amount must be > 0" },
               })}
-              className={`w-full rounded-xl border px-4 py-2.5 text-sm focus:outline-none focus:ring-2 transition ${
-                errors.amount
-                  ? "border-red-500 focus:ring-red-300"
-                  : "border-gray-300 focus:ring-blue-400"
-              }`}
+              className="w-full bg-slate-50 rounded-lg border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition-all font-semibold text-slate-800"
             />
-            {errors.amount && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.amount.message}
-              </p>
-            )}
           </div>
 
-          {/* Submit */}
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition"
-          >
-            {isSubmitting ? "Creating..." : "Create Transaction"}
-          </button>
+          {/* Submit Button */}
+          <div className="pt-4">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full bg-slate-900 text-white py-3.5 rounded-lg font-medium text-sm hover:bg-slate-800 active:scale-[0.99] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="animate-spin" size={18} />
+                  Processing...
+                </>
+              ) : (
+                "Post Transaction"
+              )}
+            </button>
+          </div>
         </form>
       </div>
     </div>
